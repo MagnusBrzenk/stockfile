@@ -1,0 +1,20 @@
+{
+  "name": "Sotckfile",
+  "description": "Simple LAMP-stack file server with emphasis on sharing tagged media files as galleries",
+  "authors": [
+    {
+      "name": "Magnus Brzenk",
+      "email": "magnusbrzenk@gmail.com"
+    }
+  ],
+  "require": {
+    "vlucas/phpdotenv": "^3.3",
+    "php": ">=5.5.0"
+  },
+  "minimum-stability": "dev",
+  "extra": {
+    "branch-alias": {
+      "dev-master": "1.0.x-dev"
+    }
+  }
+}

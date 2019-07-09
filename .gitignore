@@ -1,0 +1,10 @@
+temp.html
+temp.sql
+test.sh
+vendor
+.redundant
+.env
+roughWorking*
+
+.thumbnails_generated/**
+.thumbnails_linked/**

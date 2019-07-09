@@ -1,0 +1,10 @@
+{
+    "php.validate.executablePath": "/usr/local/bin/php",
+    "php.validate.run": "onType",
+    "phpSniffer.run": "onType",
+    "phpcs.enable": false,
+    "cSpell.words": [
+        "file",
+        "yyyymmdd"
+    ]
+}

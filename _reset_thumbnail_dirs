@@ -1,0 +1,20 @@
+#! /bin/bash
+
+# Mainly for development, this script removes and resets thumbnail dirs
+
+rm -rf .thumbnails_generated
+mkdir .thumbnails_generated
+echo "
+\`.generated_thumbnails\`
+
+This directory holds all the generated thumbnails without any nested-dir structuring. To browse the thumbnails by year and month using symlinks to these files, look in the dir \`.browse_thumbnails\`.
+
+" >".thumbnails_generated/README.md"
+
+rm -rf .thumbnails_linked
+mkdir .thumbnails_linked
+echo "
+\`.thumbnails_linked\`
+
+This directory holds symlinks within nested directories pointing to generated thumbnails in \`.thumbnails_generated\`. The directories are based on year/month as determined by the media file's EXIF data.
+" >".thumbnails_linked/README.md"
