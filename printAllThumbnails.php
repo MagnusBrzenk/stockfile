@@ -8,32 +8,30 @@ function printAllThumbnails()
 {
     $file_data_rows = db\getFileData();
     $path_to_original_files = db\STOCKFILE_CONFIG::$STOCKFILE_DATA_DIRS[0];
-    $output = '<div class="grid">';
+
     foreach ($file_data_rows as $row) {
         // echo "<hr>";
         // print_r($row);
         // $file = $path_to_original_files . "/" . $row['file_name'];
-        $file = $row['file_name'];
-        $thumb_file = "/stockfile/.thumbnails_generated/" . thumbnailfunctions\getThumbFileName($file); //$path_to_original_files . "/" . $row['file_name'];
-        $output .=
-            '
-                <div class="gallery-wrapper">
-                    <a href="' . $thumb_file . '">
-                        <div
-                            class="gallery"
-                            style="background-image:url(' . $thumb_file . ');"
-                        >
-                            <div class="gallery-tint">
-                            </div>
-                            <div class="gallery-name">
-                            ' . $thumb_file . '<br><span style="font-size: 16px;">
-                            </div>
+        // $file = $row['file_name'];
+        $file = "/data/magnus/" . $row['file_name'];
+        $thumb_file = "/stockfile/.thumbnails_generated/" . thumbnailfunctions\getThumbFileName($row['file_name']);
+
+        echo '
+            <div class="gallery-wrapper" onCLick="loadImage(\'' . $file . '\')">
+                    <div
+                        class="gallery"
+                        style="background-image:url(' . $thumb_file . ');"
+                    >
+                        <div class="gallery-tint">
                         </div>
-                    </a>
-                </div>
-            ';
+                        <div class="gallery-name">
+                        ' . $thumb_file . '<br><span style="font-size: 16px;">
+                        </div>
+                    </div>
+            </div>
+        ';
     }
-    echo $output . '</div>';
 }
 
 
