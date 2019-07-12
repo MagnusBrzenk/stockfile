@@ -5,8 +5,6 @@ use db\STOCKFILE_CONFIG;
 
 require_once __DIR__ . "/db.php";
 require_once __DIR__ . '/fileHandlers.php';
-require_once __DIR__ . "/thumbnailFunctions.php";
-
 
 function processFiles()
 {
@@ -18,10 +16,8 @@ function processFiles()
 }
 processFiles();
 
-
 function processFile($path_to_original_files, $user_name, $isForceRecompute = false)
 {
-
     // Get all original media files
     if (!realpath($path_to_original_files)) throw new Error("" . $path_to_original_files . " is not a real path!!!");
     $media_files = scandir($path_to_original_files);
@@ -37,15 +33,31 @@ function processFile($path_to_original_files, $user_name, $isForceRecompute = fa
         if (is_dir($path_to_original_files . "/" . $file_name)) continue;
 
         // Tests for (re)processing media file
-        $tentative_thumbnail_path = __DIR__ . "/../" . ".thumbnails_generated/" . thumbnailfunctions\getThumbnailFileName($file_name);
+        $tentative_thumbnail_path = __DIR__ . "/../.thumbnails_generated/" . $user_name . "/" . getThumbnailFileName($file_name);
         $isThumbnailExisting = realpath($tentative_thumbnail_path);
         $isFileInDB = file_handlers\isFileInDB($file_name);
 
+        // Generate DB info, thumbnails and videos
         if (!$isThumbnailExisting || !$isFileInDB || $isForceRecompute) {
             echo "<h3>PROCESSING FILE " . $file_name . "</h3>";
+
+            // Generate thumbnail
             $file_datetime = getDateFromMediaExif($path_to_original_files . "/" . $file_name);
-            $thumbnail_paths = generateThumbNail($file_name, $path_to_original_files, $file_datetime['date']);
-            file_handlers\insert_files([["file_name" => $file_name, "thumb_linked_path" => $thumbnail_paths["thumb_linked_path"], "exif_created" => $file_datetime['date'] . " " . $file_datetime['time']]]);
+            $thumbnail_paths = generateThumbNail($file_name, $user_name, $path_to_original_files, $file_datetime['date']);
+
+            // Add data to DB for this file
+            file_handlers\insert_files(
+                [
+                    [
+                        "file_name" => $file_name,
+                        "owner_user_name" => $user_name,
+                        "thumb_linked_path" => $thumbnail_paths["thumb_linked_path"],
+                        "exif_created" => $file_datetime['date'] . " " . $file_datetime['time']
+                    ]
+                ]
+            );
+
+            // Confirm DB data and thumbnail created
             echo "Retrieved db entry: " . json_encode(file_handlers\get_files($file_name)) . "<br>";
             echo "Linked thumb entry: " . json_encode($thumbnail_paths['thumb_linked_path']) . "<br>";
         }
@@ -57,7 +69,7 @@ function processFile($path_to_original_files, $user_name, $isForceRecompute = fa
  * Determines path to sym-linked thumbnail image within nested browsing dir; appends '.jpg' if file is video
  * E.g. ('IMG_1000.MOV','2019:01:01') => '/home/magnus/stockfile/.thumbnails_linked/2019/01/img_1000.mov.jpg'
  */
-function getThumbLinkedPath($file_name, $file_yyyymmdd)
+function getThumbLinkedPath($file_name, $user_name, $file_yyyymmdd)
 {
     // Create path based on $file_date 'yyyy:mm:dd'
     $file_date_parts = explode('/', $file_yyyymmdd);
@@ -65,10 +77,10 @@ function getThumbLinkedPath($file_name, $file_yyyymmdd)
     $month = $file_date_parts[1];
 
     // Ensure dirs exist for this path
-    $path = __DIR__ . "/../.thumbnails_linked/" . $year . "/" . $month;
+    $path = __DIR__ . "/../.thumbnails_linked/" . $user_name . "/" . $year . "/" . $month;
     if (!realpath($path)) shell_exec('mkdir -p ' . $path);
 
-    $thumb_path = realpath($path) . "/" . thumbnailfunctions\getThumbnailFileName($file_name);
+    $thumb_path = realpath($path) . "/" . getThumbnailFileName($file_name);
     return $thumb_path;
 }
 
@@ -120,15 +132,17 @@ function getDateFromMediaExif($file_path)
  * 2. Create a symlink from newly generated JPG within nested dir in .thumbnails_linked
  * Returns location of 'thumb_generated_path' and 'thumb_linked_path' files generated
  */
-function generateThumbNail($file_name, $path_to_original_files, $file_date_yyyymmdd)
+function generateThumbNail($file_name, $user_name, $path_to_original_files, $file_date_yyyymmdd)
 {
     // 0. Setup Params
     $thumb_size = 400;
     $file_path = $path_to_original_files . "/" . $file_name;
     // 0.1. Path to 'thumb_generated_path' generated thumbnail
-    $thumb_generated_path = __DIR__ . "/../.thumbnails_generated/" . thumbnailfunctions\getThumbnailFileName($file_name);
+    $tentative_path = __DIR__ . "/../.thumbnails_generated/" . $user_name;
+    if (!realpath($tentative_path)) shell_exec("mkdir -p " . $tentative_path);
+    $thumb_generated_path = __DIR__ . "/../.thumbnails_generated/" . $user_name . "/" . getThumbnailFileName($file_name);
     // 0.2. Path to thumb_linked_path thumbnail
-    $thumb_linked_path = getThumbLinkedPath($file_name, $file_date_yyyymmdd);
+    $thumb_linked_path = getThumbLinkedPath($file_name, $user_name, $file_date_yyyymmdd);
 
     // 1. Imagemagick convert original media file to thumbnail jpg; Mac needs PATH augment
     $cmd = "
@@ -168,3 +182,16 @@ function clean_minutes($input)
 // echo clean_minutes("05+04:00");
 // echo clean_minutes("05-04:00");
 // echo clean_minutes("05");
+
+
+
+/**
+ * SSOT for thumb file names absed on file type of original
+ */
+function getThumbnailFileName($file_name)
+{
+    $new_file_name = strtolower($file_name);
+    if (strpos($new_file_name, ".mov")) $new_file_name .= '.jpg';
+    if (strpos($new_file_name, ".m4v")) $new_file_name .= '.jpg';
+    return $new_file_name;
+}

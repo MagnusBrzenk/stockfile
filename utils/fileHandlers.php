@@ -56,19 +56,26 @@ function insert_files($post_body_array)
         // Extract params
         $file_name = isset($DATA['file_name']) ? $DATA['file_name'] : null;
         $thumb_linked_path = isset($DATA['thumb_linked_path']) ? $DATA['thumb_linked_path'] : null;
+        $owner_user_name = isset($DATA['owner_user_name']) ? $DATA['owner_user_name'] : null;
         $exif_created = isset($DATA['exif_created']) ? $DATA['exif_created'] : null;
 
         // Fail if not all params present
-        if (!$file_name || !$thumb_linked_path || !$exif_created) {
+        if (!$file_name || !$owner_user_name || !$thumb_linked_path || !$exif_created) {
             $response[] = ['status' => 0, 'status_message' => 'Insufficient file-creation data!'];
             continue;
         }
 
         // Execute insert/update query
         $query =
-            "INSERT INTO files (file_name, thumb_linked_path, exif_created)
-            VALUES('{$file_name}', '{$thumb_linked_path}', '{$exif_created}') ON DUPLICATE KEY
-            UPDATE file_name='{$file_name}', thumb_linked_path='{$thumb_linked_path}', exif_created='{$exif_created}';";
+            "INSERT INTO files (file_name, thumb_linked_path, owner_user_name, exif_created)
+            VALUES('{$file_name}', '{$thumb_linked_path}', '{$owner_user_name}', '{$exif_created}') ON DUPLICATE KEY
+            UPDATE file_name='{$file_name}', thumb_linked_path='{$thumb_linked_path}', owner_user_name='{$owner_user_name}', exif_created='{$exif_created}';";
+
+echo "<hr>";
+echo $query;
+echo "<hr>";
+
+
 
         if (mysqli_query($connection, $query)) {
             $response[] = array(
@@ -96,9 +103,10 @@ function update_file($file_name, $put_body)
 
     if (!$file_name) $file_name = isset($put_body["file_name"]) ? $put_body["file_name"] : null;
     $exif_created = isset($put_body["exif_created"]) ? $put_body["exif_created"] : null;
+    $owner_user_name = isset($put_body["owner_user_name"]) ? $put_body["owner_user_name"] : null;
     $thumb_linked_path = isset($put_body["thumb_linked_path"]) ? $put_body["thumb_linked_path"] : null;
 
-    if (!$file_name || !$thumb_linked_path || !$exif_created) {
+    if (!$file_name || !$owner_user_name || !$thumb_linked_path || !$exif_created) {
         return array("message" =>  "Insufficient field data provided for update!");
     }
 

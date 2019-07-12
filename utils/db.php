@@ -58,6 +58,7 @@ function setupDB()
     $QUERY = "CREATE TABLE IF NOT EXISTS files (
         file_name VARCHAR(16) NOT NULL UNIQUE PRIMARY KEY,
         thumb_linked_path VARCHAR(250) NOT NULL UNIQUE,
+        owner_user_name VARCHAR(20) NOT NULL,
         exif_created DATETIME DEFAULT NULL,
         record_created DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
     ) ENGINE=InnoDB DEFAULT CHARSET=latin1;";
