@@ -9,7 +9,8 @@
   ],
   "require": {
     "vlucas/phpdotenv": "^3.3",
-    "php": ">=5.5.0"
+    "php": ">=5.5.0",
+    "firebase/php-jwt": "dev-master"
   },
   "minimum-stability": "dev",
   "extra": {

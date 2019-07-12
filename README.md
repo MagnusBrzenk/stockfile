@@ -22,4 +22,4 @@ In a remote linux server, clone this repo and symlink it to your apache Document
 
 ## Dev Notes
 
-- ...
+- PHP's `try-catch` block will not catch all types of exception with `catch(Exception $e)`. To catch everything in PHP7, use `catch(\Throwable $e)`.

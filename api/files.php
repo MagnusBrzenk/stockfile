@@ -3,19 +3,32 @@
 namespace files;
 
 use file_handlers;
+use auth;
 
 require_once __DIR__ . '/../utils/fileHandlers.php';
+require_once __DIR__ . '/auth.php';
 
 function handleHttpRequest()
 {
+    // Check if request is wt-authorized
+    $decodedToken = auth\checkAuthorization();
+    if (!$decodedToken) return;
 
     $request_method = $_SERVER["REQUEST_METHOD"];
     switch ($request_method) {
         case 'GET':
+
+            print_r([$decodedToken]);
+
+
             // Parse http request
             $file_name = !!empty($_GET["file_name"]) ? null : $_GET["file_name"];
+            $user_name = $decodedToken['data']['username'];
+
+            print_r([$user_name]);
+
             // Handle extracted params
-            $response = file_handlers\get_files($file_name);
+            $response = file_handlers\get_files($file_name, $user_name);
             header('Content-Type: application/json');
             echo json_encode($response);
             break;
@@ -23,23 +36,8 @@ function handleHttpRequest()
             // Parse http request
             $post_body = json_decode(file_get_contents("php://input"), true);
             if (!is_array($post_body)) $post_body = array($post_body);
-
-            // echo "\n\n";
-            // print_r($post_body);
-            // echo "\n\n";
-            // return;
-
             // Handle extracted params
             $response = file_handlers\insert_files($post_body);
-
-
-            // echo "\n\n";
-            // print_r($response);
-            // echo "\n\n";
-
-
-            // return;
-
             header('Content-Type: application/json');
             echo json_encode($response);
             break;

@@ -20,6 +20,8 @@ class STOCKFILE_CONFIG
     static $STOCKFILE_DB_NAME;
     static $STOCKFILE_DB_USER;
     static $STOCKFILE_DB_PASSWORD;
+    static $STOCKFILE_SECRET_AUTH_KEY;
+    static $STOCKFILE_ADMIN_USERNAME;
     static $MYSQLCONN;
 
     static function getConnection()
@@ -35,6 +37,8 @@ class STOCKFILE_CONFIG
         self::$STOCKFILE_DB_NAME = getenv('STOCKFILE_DB_NAME');
         self::$STOCKFILE_DB_USER = getenv('STOCKFILE_DB_USER');
         self::$STOCKFILE_DB_PASSWORD = getenv('STOCKFILE_DB_PASSWORD');
+        self::$STOCKFILE_SECRET_AUTH_KEY = getenv('STOCKFILE_SECRET_AUTH_KEY');
+        self::$STOCKFILE_ADMIN_USERNAME = getenv('STOCKFILE_ADMIN_USERNAME');
 
         if (!self::$MYSQLCONN) {
             self::$MYSQLCONN = mysqli_connect(
@@ -55,6 +59,10 @@ function setupDB()
     // Initialize mysql connection
     $CONN = STOCKFILE_CONFIG::getConnection();
 
+    // Check that admin username is one of the user names
+    if (!in_array(STOCKFILE_CONFIG::$STOCKFILE_ADMIN_USERNAME, STOCKFILE_CONFIG::$STOCKFILE_USER_NAMES)) throw new \Error('Admin username is NOT in list of users!');
+
+    // Ensure files table exists
     $QUERY = "CREATE TABLE IF NOT EXISTS files (
         file_name VARCHAR(16) NOT NULL UNIQUE PRIMARY KEY,
         thumb_linked_path VARCHAR(250) NOT NULL UNIQUE,

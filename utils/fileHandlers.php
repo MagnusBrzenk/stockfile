@@ -14,11 +14,16 @@ $connection = STOCKFILE_CONFIG::getConnection();
  * Returns OBJECT of status-failure message if error occurs
  * Returns ARRAY of all rows if $file_name is NOT specified (table with no rows returns empty array)
  */
-function get_files($file_name = null)
+function get_files($file_name = null, $user_name = null)
 {
+    // Kill user_name if it's admin
+    if ($user_name === STOCKFILE_CONFIG::$STOCKFILE_ADMIN_USERNAME) $user_name = null;
+
     global $connection;
     $query = "SELECT * FROM files";
-    $query .= $file_name !== null ? " WHERE file_name='" . $file_name . "' LIMIT 1;" : ";";
+    $query .= $file_name !== null ? " WHERE file_name='" . $file_name . "' " : "";
+    $query .= $user_name !== null ? ($file_name === null ? " WHERE " : " AND ") . "owner_user_name='" . $user_name . "' " : "";
+    $query .= $file_name !== null ? " LIMIT 1;" : ";";
 
     $response = array();
     $result = mysqli_query($connection, $query);
@@ -32,6 +37,9 @@ function get_files($file_name = null)
         while ($row = mysqli_fetch_array($result)) {
             $response[] = array(
                 'file_name' => $row['file_name'],
+                'owner_user_name' => $row['owner_user_name'],
+                'record_created' => $row['record_created'],
+                'thumb_linked_path' => $row['thumb_linked_path'],
                 'exif_created' => $row['exif_created']
             );
         }
@@ -70,12 +78,6 @@ function insert_files($post_body_array)
             "INSERT INTO files (file_name, thumb_linked_path, owner_user_name, exif_created)
             VALUES('{$file_name}', '{$thumb_linked_path}', '{$owner_user_name}', '{$exif_created}') ON DUPLICATE KEY
             UPDATE file_name='{$file_name}', thumb_linked_path='{$thumb_linked_path}', owner_user_name='{$owner_user_name}', exif_created='{$exif_created}';";
-
-echo "<hr>";
-echo $query;
-echo "<hr>";
-
-
 
         if (mysqli_query($connection, $query)) {
             $response[] = array(
