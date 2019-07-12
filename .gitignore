@@ -3,9 +3,13 @@ temp.sql
 test.sh
 vendor
 .redundant
-.env
+**/.env
 roughWorking*
+_test_api
 
 .thumbnails_generated/**
+!.thumbnails_generated/README.md
 .thumbnails_linked/**
+!.thumbnails_linked/README.md
+
 data/**

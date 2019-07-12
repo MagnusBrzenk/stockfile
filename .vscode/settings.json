@@ -5,6 +5,7 @@
     "phpcs.enable": false,
     "cSpell.words": [
         "file",
+        "symlinked",
         "yyyymmdd"
     ]
 }

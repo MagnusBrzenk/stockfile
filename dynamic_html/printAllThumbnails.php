@@ -1,8 +1,8 @@
 <?php
 
 
-require_once getcwd() . "/db.php";
-require_once getcwd() . "/thumbnailFunctions.php";
+require_once __DIR__ . "/../utils/db.php";
+require_once __DIR__ . "/../utils/thumbnailFunctions.php";
 
 function printAllThumbnails()
 {
@@ -15,7 +15,7 @@ function printAllThumbnails()
         // $file = $path_to_original_files . "/" . $row['file_name'];
         // $file = $row['file_name'];
         $file = "/data/magnus/" . $row['file_name'];
-        $thumb_file = "/stockfile/.thumbnails_generated/" . thumbnailfunctions\getThumbFileName($row['file_name']);
+        $thumb_file = "/stockfile/.thumbnails_generated/" . thumbnailfunctions\getThumbnailFileName($row['file_name']);
 
         echo '
             <div class="gallery-wrapper" onCLick="loadImage(\'' . $file . '\')">

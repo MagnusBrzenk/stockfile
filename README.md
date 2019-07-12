@@ -2,7 +2,7 @@
 
 ## What's This?
 
-A simple LAMP-stack self-hosted file server for backing up data (chiefly from Apple devices) with an emphasis on being able to tag and annotate media files for controlled sharing of subsets of your personal media with others.
+A simple LAMP-stack self-hosted file server for backing up files (chiefly from Apple devices) with an emphasis on being able to tag and annotate media files for controlled sharing of subsets of your personal media with others.
 
 ## Motivation
 
@@ -19,3 +19,7 @@ After trying various self-hosted file servers and image galleries (nextcloud, se
 ## Quick Install
 
 In a remote linux server, clone this repo and symlink it to your apache DocumentRoot so that it's reachable from e.g. `https://yourdomain.com/stockfile`
+
+## Dev Notes
+
+- ...

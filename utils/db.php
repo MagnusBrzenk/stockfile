@@ -2,10 +2,10 @@
 
 namespace db;
 
+require_once __DIR__ . '/../vendor/autoload.php';
+
 use Dotenv;
 
-// Setup .env read
-require_once __DIR__ . '/vendor/autoload.php';
 $dotenv = Dotenv\Dotenv::create(__DIR__);
 $dotenv->load();
 
@@ -56,57 +56,56 @@ function setupDB()
     $CONN = STOCKFILE_CONFIG::getConnection();
 
     $QUERY = "CREATE TABLE IF NOT EXISTS files (
-        file_name varchar(16) NOT NULL UNIQUE PRIMARY KEY,
-        file_date varchar(350)
+        file_name VARCHAR(16) NOT NULL UNIQUE PRIMARY KEY,
+        thumb_linked_path VARCHAR(250) NOT NULL UNIQUE,
+        exif_created DATETIME DEFAULT NULL,
+        record_created DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
     ) ENGINE=InnoDB DEFAULT CHARSET=latin1;";
 
-    // echo "<hr>" . $QUERY . "<hr>";
-
     $query_result = mysqli_query($CONN, $QUERY);
-    // echo "<hr>";
-    // print_r($query_result);
+
     return;
 }
 setupDB();
 
 
-function addFileToDB($file_name, $file_date)
-{
-    $CONN = STOCKFILE_CONFIG::getConnection();
+// function addFileToDB($file_name, $file_date)
+// {
+//     $CONN = STOCKFILE_CONFIG::getConnection();
 
-    $QUERY = "INSERT INTO files (file_name, file_date)
-        VALUES('{$file_name}', '{$file_date}') ON DUPLICATE KEY
-        UPDATE file_name='{$file_name}', file_date='{$file_date}'; ";
+//     $QUERY = "INSERT INTO files (file_name, file_date)
+//         VALUES('{$file_name}', '{$file_date}') ON DUPLICATE KEY
+//         UPDATE file_name='{$file_name}', file_date='{$file_date}'; ";
 
-    echo "<h3>ADD FILE RESULT</h3>";
+//     echo "<h3>ADD FILE RESULT</h3>";
 
-    echo "<hr>" . $QUERY . "<hr>";
+//     echo "<hr>" . $QUERY . "<hr>";
 
-    $query_result = mysqli_query($CONN, $QUERY);
-    print_r($query_result);
-    echo "<hr>";
-}
+//     $query_result = mysqli_query($CONN, $QUERY);
+//     print_r($query_result);
+//     echo "<hr>";
+// }
 
 
-function getFileData($file_name = "")
-{
-    $CONN = STOCKFILE_CONFIG::getConnection();
+// function getFileData($file_name = "")
+// {
+//     $CONN = STOCKFILE_CONFIG::getConnection();
 
-    $QUERY = "SELECT * FROM files ";
-    if (!!$file_name) $QUERY .= " WHERE file_name='" . $file_name . "';";
+//     $QUERY = "SELECT * FROM files ";
+//     if (!!$file_name) $QUERY .= " WHERE file_name='" . $file_name . "';";
 
-    $query_result = mysqli_query($CONN, $QUERY);
+//     $query_result = mysqli_query($CONN, $QUERY);
 
-    // echo "<h3>RETRIEVED FILE DATA</h3>";
+//     // echo "<h3>RETRIEVED FILE DATA</h3>";
 
-    $file_data = array();
-    while ($row = mysqli_fetch_array($query_result)) {
-        $file_data[] = $row;
-    }
-    // echo "file_data: <br>";
-    // print_r($file_data);
-    // echo ">>>" . !!$file_data . "<<< <br>";
-    // if (!$file_data) echo "<h5>XXX</h5>";
-    // echo "<hr>";
-    return $file_data;
-}
+//     $file_data = array();
+//     while ($row = mysqli_fetch_array($query_result)) {
+//         $file_data[] = $row;
+//     }
+//     // echo "file_data: <br>";
+//     // print_r($file_data);
+//     // echo ">>>" . !!$file_data . "<<< <br>";
+//     // if (!$file_data) echo "<h5>XXX</h5>";
+//     // echo "<hr>";
+//     return $file_data;
+// }
